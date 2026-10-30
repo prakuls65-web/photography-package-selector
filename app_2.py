@@ -51,7 +51,6 @@ with right:
     shoot_date = st.date_input("Preferred date", min_value=date.today())
     budget = st.number_input("Your budget (₹)", min_value=0, value=30000, step=1000)
     addons = st.multiselect("Optional extras", list(ADDONS))
-    discount_percent = st.selectbox("Eligible discount", [0, 5, 10, 15])
 
 # Calculate the price using the selected service, package and hours
 base_rate = SERVICE_RATES[service]
@@ -60,11 +59,17 @@ coverage_cost = package_rate * hours / 4
 addon_cost = sum(ADDONS[item] for item in addons)
 subtotal = coverage_cost + addon_cost
 
-# Convert the percentage into a decimal for the original discount formula
+# Automatically calculate discount based on selected package
+if package == "Luxury":
+    discount_percent = 10
+elif package == "Signature":
+    discount_percent = 5
+else:
+    discount_percent = 0
+
 discount_rate = discount_percent / 100
 discount = subtotal * discount_rate
 total = max(0, subtotal - discount)
-
 # Recommend changes when the selected package exceeds the customer's budget
 if budget <= 0:
     budget_suggestion = "Enter a budget above ₹0 to receive a recommendation."
